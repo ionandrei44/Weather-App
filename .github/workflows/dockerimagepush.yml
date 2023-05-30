@@ -37,7 +37,7 @@ jobs:
           git config --global user.email "rohanrustagi21@gmail.com"
           git config --global user.name "RohanRusta21"
           echo ${{ github.sha }}
-          sed -i "s#${DOCKERHUB_USERNAME}.*#${DOCKERHUB_USERNAME}/$weather-app-manifests:${{ github.sha }}#g" deployment.yml
+          sed -i "s#${DOCKERHUB_USERNAME}.*#${DOCKERHUB_USERNAME}/$REPO_NAME:${{ github.sha }}#g" deployment.yml
           git add -A
           git commit -am "Update image for - ${{ github.sha }}"
       - run: echo ${{ github }}
