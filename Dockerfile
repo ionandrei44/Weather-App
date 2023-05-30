@@ -8,12 +8,12 @@ WORKDIR /app
 COPY package-lock.json ./
 COPY package.json ./
 
-RUN npm ci --production
+RUN npm install
 
 COPY . .
 
-# Stage 2: Create the final image
-FROM node:16
+# Stage 2: Create the final image using Distroless base image
+FROM gcr.io/distroless/nodejs:16
 
 WORKDIR /app
 
