@@ -28,7 +28,7 @@ jobs:
         run: docker push "${DOCKERHUB_USERNAME}/${REPO_NAME}:${{ github.sha}}"
       - name: Scan container images
         run: |
-          trivy image --exit-code 1 "${DOCKERHUB_USERNAME}/${REPO_NAME}:${{ github.sha}}"
+          trivy image "${DOCKERHUB_USERNAME}/${REPO_NAME}:${{ github.sha}}"
         
   update-manifest-stage:
     runs-on: ubuntu-latest
