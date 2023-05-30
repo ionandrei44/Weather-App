@@ -47,6 +47,6 @@ jobs:
           echo ${{ github.sha }}
           sed -i "s#${DOCKERHUB_USERNAME}.*#${DOCKERHUB_USERNAME}/${REPO_NAME}:$GITHUB_RUN_NUMBER#g" deployment.yml
           git add -A
-          git commit -am "Update image for Version- $GITHUB_RUN_NUMBER"
+          git commit -am "Update image for Version - $GITHUB_RUN_NUMBER"
       - run: echo ${{ github }}
       - run: git push origin main
