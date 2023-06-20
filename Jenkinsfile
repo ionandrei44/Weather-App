@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment{
-        image = "weather_app"
+        image = "wededo4644/react_weather_app"
     }
 
     stages {
@@ -17,9 +17,15 @@ pipeline {
                 }
             }
         }
-        stage('Run the Docker Image'){
+        stage('Pushing image') {
             steps{
-                sh "docker run -itd -p 3000:3000 ${image}"
+                script {
+                    withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerhubpwd')]) {
+                    sh 'docker login -u wededo4644 -p ${dockerhubpwd}'
+                    sh 'docker push ${image}'
+                    
+                    }
+                }
             }
         }
     }
