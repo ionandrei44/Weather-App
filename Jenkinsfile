@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment{
-        image = "wededo4644/react_weather_app"
+        registry = "wededo4644/react_weather_app"
     }
 
     stages {
@@ -13,7 +13,7 @@ pipeline {
         stage('Building image') {
             steps{
                 script {
-                    docker.build("${image}")
+                    docker.build("${registry}")
                 }
             }
         }
@@ -22,7 +22,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerhubpwd')]) {
                     sh 'docker login -u wededo4644 -p ${dockerhubpwd}'
-                    sh 'docker push ${image}'
+                    sh 'docker push ${registry}'
                     
                     }
                 }
