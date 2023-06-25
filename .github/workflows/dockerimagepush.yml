@@ -1,0 +1,52 @@
+name: Build and Push Docker Image to DockerHub
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USER }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  REPO_NAME: "weather-app"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Install Trivy
+        run: |
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.18.3/trivy_0.18.3_Linux-64bit.deb
+          sudo dpkg -i trivy_0.18.3_Linux-64bit.deb   
+      - name: Build Docker Image
+        run: docker build -t "${DOCKERHUB_USERNAME}/${REPO_NAME}:$GITHUB_RUN_NUMBER" .
+      - name: Scan container images
+        run: |
+          trivy image "${DOCKERHUB_USERNAME}/${REPO_NAME}:$GITHUB_RUN_NUMBER"
+      - name: Login to DockerHub
+        run: echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+      - name: Push Docker Image to DockerHub
+        run: docker push "${DOCKERHUB_USERNAME}/${REPO_NAME}:$GITHUB_RUN_NUMBER"
+      
+  
+  update-manifest-stage:
+    runs-on: ubuntu-latest
+    needs: ['build-and-push']
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repository: RohanRusta21/weather-app-manifests
+          ref: 'main'
+          token: ${{ secrets.G_TOKEN }}
+      - name: setup git config
+        run: |
+          git config --global user.email "rohanrustagi21@gmail.com"
+          git config --global user.name "RohanRusta21"
+          echo ${{ github.sha }}
+          sed -i "s#${DOCKERHUB_USERNAME}.*#${DOCKERHUB_USERNAME}/${REPO_NAME}:$GITHUB_RUN_NUMBER#g" deployment.yml
+          git add -A
+          git commit -am "Update image for Version - $GITHUB_RUN_NUMBER"
+      - run: echo ${{ github }}
+      - run: git push origin main
