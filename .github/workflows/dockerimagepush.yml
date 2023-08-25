@@ -1,6 +1,8 @@
 name: Build and Push Docker Image to DockerHub
 
 on:
+  schedule:
+    - cron: '0 0 * * *'
   push:
     branches:
       - main
